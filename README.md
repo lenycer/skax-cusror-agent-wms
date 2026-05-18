@@ -1,8 +1,8 @@
-# WMS 구축 프로젝트 — Cursor Agent Harness 실습
+# WMS 구축 프로젝트 — Cursor Agent 실습
 
 ## 프로젝트 개요
 
-Cursor Agent Harness를 활용한 멀티 에이전트 개발 실습 프로젝트입니다. 하네스 5요소(Rules, Commands, Skills, Agents, Hooks)를 구축하고, 8명의 에이전트가 협업하여 WMS(창고관리시스템)를 개발하는 과정을 체험합니다.
+Cursor Agent 활용한 멀티 에이전트 개발 실습 프로젝트입니다. 5요소(Rules, Commands, Skills, Agents, Hooks)를 구축하고, 8명의 에이전트가 협업하여 WMS(창고관리시스템)를 개발하는 과정을 체험합니다.
 
 ## 기술 스택
 
@@ -19,7 +19,7 @@ Cursor Agent Harness를 활용한 멀티 에이전트 개발 실습 프로젝트
 
 ```
 skax-devlab-wms/
-├── .cursor/                          # Cursor Harness 설정
+├── .cursor/                          # Cursor 설정
 │   ├── rules/                        # 코딩 규칙 (6개)
 │   │   ├── 01-project-context.mdc    # 전역 컨텍스트 (alwaysApply)
 │   │   ├── 02-java-backend.mdc      # Java 백엔드 규칙
@@ -165,7 +165,7 @@ orchestrator (전체 조율)
 | 04 | `04-skills.md` | Skills 작성 |
 | 05 | `05-agents.md` | Agents 정의 |
 | 06 | `06-hooks.md` | Hooks 설정 |
-| 07 | `07-verification.md` | 하네스 검증 |
+| 07 | `07-verification.md` | 검증 |
 | 08 | `08-sequential-dev.md` | 에이전트 순차 개발 (사람이 7명을 순서대로 호출) |
 | 09 | `09-orchestration.md` | 오케스트레이터 자동 완성 (1명에게 전체 위임) |
 
