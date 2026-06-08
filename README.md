@@ -1,16 +1,8 @@
-<<<<<<< HEAD
 # WMS 구축 프로젝트 — Cursor Agent 실습
 
 ## 프로젝트 개요
 
 Cursor Agent 활용한 멀티 에이전트 개발 실습 프로젝트입니다. 5요소(Rules, Commands, Skills, Agents, Hooks)를 구축하고, 8명의 에이전트가 협업하여 WMS(창고관리시스템)를 개발하는 과정을 체험합니다.
-=======
-# WMS 구축 프로젝트 — Cursor Agent 기반실습
-
-## 프로젝트 개요
-
-Cursor Agent를 활용한 멀티 에이전트 개발 실습 프로젝트입니다. 하네스 5요소(Rules, Commands, Skills, Agents, Hooks)를 구축하고, 8명의 에이전트가 협업하여 WMS(창고관리시스템)를 개발하는 과정을 체험합니다.
->>>>>>> 6c440eb2a68ea19e223dfb8e98151d78f269b6ac
 
 ## 기술 스택
 
