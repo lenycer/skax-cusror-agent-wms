@@ -12,7 +12,7 @@
 | 구분      | 08 순차 개발             | 09 오케스트레이션               |
 | ------- | -------------------- | ------------------------ |
 | 범위      | PRD 전체 (F1~F4)       | PRD 전체 (F1~F4)           |
-| 방식      | 사람이 에이전트 7명을 순서대로 호출 | 오케스트레이터 1명에게 전체 위임       |
+| 방식      | 사람이 에이전트 6명을 순서대로 호출 (db-architect 제외) | 오케스트레이터 1명에게 전체 위임       |
 | 에이전트 호출 | 사람이 `@에이전트명`으로 직접    | 오케스트레이터가 `/에이전트명`으로 자동   |
 | 병렬 실행   | 사람이 판단하여 순차 진행       | 오케스트레이터가 독립 Task는 병렬 위임  |
 | 검증·재시도  | 사람이 확인 포인트를 보고 판단    | 오케스트레이터가 산출물 확인 후 자동 재시도 |
@@ -67,26 +67,31 @@ rm -rf docs/test-reports/*
 ### 4.1 프롬프트
 
 채팅에서 오케스트레이터에게 다음과 같이 요청한다.
+실행 순서·위임·검증·재시도는 `.cursor/agents/orchestrator.md` 정의를 따른다.
+단계마다 사용자가 다시 `@에이전트명`을 호출할 필요는 없다.
+
+**최소 프롬프트 (§8 핵심 포인트)**
+
+```
+@orchestrator
+docs/01.analysis/01.rfp/wms_prd.md 를 입력으로 PRD 전체(F1~F4)를 처음부터 끝까지 만들어 줘.
+DB DDL은 database/schemas/에 이미 작성되어 있어.
+```
+
+**권장 프롬프트 (참조 문서·전제를 명시)**
 
 ```
 @orchestrator
 docs/01.analysis/01.rfp/wms_prd.md 를 입력으로 PRD 전체(F1~F4)를 처음부터 끝까지 만들어 줘.
 
+전제:
+- DB DDL은 database/schemas/에 이미 있음 → db-architect 위임하지 않음
+- 실행 순서·검증·재시도는 orchestrator 에이전트 정의를 따름
+
 참조 문서:
-- 산출물 표준: docs/99.references/document-standards.md
-- 개발 표준: docs/99.references/coding-standards.md
-- 백엔드 설정: docs/99.references/backend-config.md
-
-순서:
-1. analyst에게 요구사항 분석 + Task 분해 위임 (application.yml 생성 포함)
-2. ui-designer에게 화면 설계 위임
-3. backend-developer에게 백엔드 구현 위임 (서버 기동 확인 + REQ §5 갱신 + CORS SecurityConfig 생성 포함)
-4. test-backend에게 API 테스트 위임 (서버 기동 → health check → curl 테스트 → 서버 종료)
-5. frontend-developer에게 화면 구현 위임
-6. test-integration에게 통합 테스트 위임 (UI 설계서 기반 화면 기능 시나리오)
-
-각 단계 완료 시 산출물을 확인하고, 문제가 있으면 해당 에이전트에게 수정 위임해.
-DB DDL은 database/schemas/에 이미 작성되어 있어.
+- docs/99.references/document-standards.md
+- docs/99.references/coding-standards.md
+- docs/99.references/backend-config.md
 ```
 
 ### 4.2 오케스트레이터가 수행하는 흐름
@@ -99,30 +104,26 @@ orchestrator
   │    └─ [검증] §5 API 명세에 응답 예시·시드 데이터가 있는가
   │    └─ [검증] 네이밍이 document-standards.md를 따르는가
   │
-  ├─② db-architect 위임
-  │    └─ DDL + 초기 데이터 SQL + data-dictionary.md 생성
-  │    └─ [검증] 테이블·전이·시드 데이터가 요구사항과 정합하는가
-  │
-  ├─③ ui-designer 위임
+  ├─② ui-designer 위임
   │    └─ 입고·출고·대시보드 UI 설계서 생성
   │    └─ [검증] 화면·버튼·시나리오·에러 피드백이 포함되어 있는가
   │
-  ├─④ backend-developer 위임
+  ├─③ backend-developer 위임 (병렬: 입고·출고·대시보드)
   │    └─ 입고·출고·대시보드·상태 전이 API 구현
   │    └─ CORS 전용 SecurityConfig 생성 (backend-config.md 참조)
   │    └─ 빌드 확인 → 서버 기동 확인 → REQ §5 갱신
   │    └─ [검증] 빌드 성공, 서버 기동 성공, §5 갱신 완료, SecurityConfig 존재
   │
-  ├─⑤ test-backend 위임
+  ├─④ test-backend 위임
   │    └─ REQ §5 기준 전체 API 테스트
   │    └─ [검증] 정상·비정상 케이스 통과, 이력 기록 확인
   │    └─ [실패 시] 원인 파악 → backend-developer에게 수정 위임 → 재테스트
   │
-  ├─⑥ frontend-developer 위임
+  ├─⑤ frontend-developer 위임
   │    └─ UI 설계서 + REQ §5 기준 SPA 화면 구현 (index.html + views/ + components/)
-  │    └─ [검증] SPA 구조, views/ 페이지 컴포넌트 생성, api.js API_BASE 포트 일치, SecurityConfig 존재
+  │    └─ [검증] SPA 구조, views/ 페이지 컴포넌트 생성, api.js API_BASE 포트 일치
   │
-  └─⑦ test-integration 위임
+  └─⑥ test-integration 위임
        └─ UI 설계서 기준 화면 기능 시나리오 테스트
        └─ [검증] 입고·출고·대시보드 시나리오 통과, CORS Preflight 정상, curl과 브라우저 결과 일치
        └─ [실패 시] CORS/포트/프론트/백엔드 원인 식별 → 해당 에이전트에게 수정 위임 → 재테스트
@@ -134,7 +135,7 @@ orchestrator
 
 **다음 단계로 넘어가도 되는가**: 산출물이 존재하고, 다음 에이전트의 입력으로 충분한지 확인한다. 부족하면 같은 에이전트에게 보완을 요청한다.
 
-**병렬 실행이 가능한가**: db-architect와 ui-designer는 서로 의존하지 않으므로 동시에 위임할 수 있다. 단, backend-developer 이후는 반드시 순차 실행한다.
+**병렬 실행이 가능한가**: backend-developer의 독립 Task(입고·출고·대시보드)는 동시에 위임할 수 있다. analyst 완료 후 ui-designer는 단독 진행하며, backend-developer 이후(test-backend → frontend → test-integration)는 반드시 순차 실행한다.
 
 **테스트 실패 시 어디를 수정해야 하는가**: test-backend 실패는 backend-developer에게, test-integration의 프론트↔백엔드 불일치는 원인 쪽(프론트 또는 백엔드)에게 수정을 위임한다.
 
@@ -146,7 +147,7 @@ orchestrator
 
 - 오케스트레이터가 에이전트를 올바른 순서로 호출하는가
 - 각 에이전트에게 충분한 컨텍스트(Task 경로, 참조 문서)를 전달하는가
-- 병렬 실행 가능한 단계(②③)를 실제로 병렬 처리하는가
+- 병렬 실행 가능한 백엔드 Task(입고·출고·대시보드)를 실제로 병렬 처리하는가
 
 ### 5.2 참조 문서 활용
 
@@ -183,7 +184,7 @@ orchestrator
 | 비교 항목    | 확인 내용                                                           |
 | -------- | --------------------------------------------------------------- |
 | 요구사항 정의서 | 네이밍이 document-standards.md를 따르는가, §5 응답 예시가 포함되어 있는가            |
-| DB 스키마   | 테이블 구조·전이 규칙이 동일한가, data-dictionary.md가 생성되었는가                  |
+| DB 스키마   | database/schemas/ 기존 DDL·전이 규칙과 정합하는가                  |
 | 백엔드 코드   | 계층 구조(Controller→Service→Mapper→XML)가 coding-standards.md를 따르는가 |
 | 프론트엔드    | 같은 화면·컴포넌트 패턴인가, api.js 구조가 coding-standards.md를 따르는가           |
 | 테스트 결과   | 동일한 케이스를 커버하는가, 리포트가 document-standards.md 구조를 따르는가             |
@@ -194,7 +195,7 @@ orchestrator
 ## 7. 완료 기준
 
 - 소스 초기화 후 오케스트레이터 1명에게 위임하여 PRD 전체(F1~F4)가 자동 완성되었다
-- 오케스트레이터가 7개 에이전트를 올바른 순서로 호출하고 산출물을 검증하는 과정을 관찰했다
+- 오케스트레이터가 6개 에이전트(db-architect 제외)를 올바른 순서로 호출하고 산출물을 검증하는 과정을 관찰했다
 - 모든 산출물의 네이밍과 경로가 document-standards.md를 따른다
 - 빌드 성공, 서버 기동 성공, API 테스트 통과, 화면 구현 완료를 확인했다
 - 테스트 실패 시 오케스트레이터가 수정 위임 → 재테스트하는 흐름을 확인했다 (실패가 없었으면 의도적으로 발생시켜 볼 수 있다)
@@ -202,7 +203,7 @@ orchestrator
 
 ## 8. 핵심 포인트
 
-08에서 사람이 7번 판단하고 7번 호출한 것을, 09에서는 오케스트레이터가 대신한다. 사람이 한 일은 "PRD를 주고 시작해"라는 한 문장뿐이다.
+08에서 사람이 6번 판단하고 6번 호출한 것을(db-architect 제외), 09에서는 오케스트레이터가 대신한다. 사람이 한 일은 "PRD를 주고 시작해"라는 한 문장뿐이다. 상세 실행 순서는 사용자가 적지 않아도 된다. `.cursor/agents/orchestrator.md`에 정의되어 있으며, 사용자는 PRD 경로와 DB 전제만 전달하면 된다.
 
 이것이 가능한 이유는 5요소가 갖춰져 있기 때문이다. Rules가 코딩 규칙을 주입하고, Skills가 상태 전이 패턴을 제공하고, Agents가 역할을 나누고, Task가 완료 조건을 명시하고, Hooks가 위험 동작을 차단한다. 오케스트레이터는 이 인프라 위에서 "다음에 누구를 부르고, 결과가 충분한지 확인"하는 역할만 한다.
 
