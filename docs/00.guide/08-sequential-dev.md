@@ -98,7 +98,13 @@ DB 네이밍 규칙은 docs/99.references/coding-standards.md를 따라.~~
 analyst가 만든 Task와 API 명세를 기반으로 화면을 설계한다.
 
 ```
+@ui-designer
+docs/01.analysis/03.tasks/ 에서 UI 관련 Task를 읽고
+입고, 출고, 대시보드 화면의 UI 설계서를 만들어 줘.
+API 경로는 요구사항 정의서 §5를 참조해.
 
+산출물 네이밍과 경로는 docs/99.references/document-standards.md를 따라.
+상태 태그 색상은 docs/99.references/coding-standards.md를 따라.
 ```
 
 확인 포인트:
