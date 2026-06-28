@@ -8,7 +8,7 @@ Cursor Agent 활용한 멀티 에이전트 개발 실습 프로젝트입니다. 
 
 | 구분 | 스택 |
 |------|------|
-| 백엔드 | Java 17, Spring Boot 3.x, MyBatis, PostgreSQL |
+| 백엔드 | Java 21, Spring Boot 3.x, MyBatis, PostgreSQL |
 | 프론트엔드 | Vue 3 (CDN, Options API), Vue Router (CDN, Hash History), Element Plus, Tailwind CSS, Axios |
 | CORS | Spring Security (CORS 전용, 인증 없음) |
 | 빌드 | Gradle |
