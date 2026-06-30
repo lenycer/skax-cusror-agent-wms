@@ -1,0 +1,28 @@
+spring:
+  application:
+    name: wms-backend
+  datasource:
+    url: ${SPRING_DATASOURCE_URL:jdbc:postgresql://db.yonghee.net:5532/wmsdb}
+    username: ${SPRING_DATASOURCE_USERNAME:wms_developer}
+    password: ${SPRING_DATASOURCE_PASSWORD:wmspassword1234}
+    hikari:
+      maximum-pool-size: ${HIKARI_MAX_POOL_SIZE:3}
+      minimum-idle: ${HIKARI_MIN_IDLE:1}
+      idle-timeout: 300000
+      max-lifetime: 1800000
+      connection-timeout: 20000
+
+mybatis:
+  mapper-locations: classpath:mapper/**/*.xml
+  configuration:
+    map-underscore-to-camel-case: false
+
+# Springdoc OpenAPI (Swagger UI). 운영 배포 시 비활성: SPRINGDOC_SWAGGER_UI_ENABLED=false
+springdoc:
+  api-docs:
+    path: /v3/api-docs
+  swagger-ui:
+    path: /swagger-ui.html
+    try-it-out-enabled: true
+    operations-sorter: alpha
+    tags-sorter: alpha
