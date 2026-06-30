@@ -1,0 +1,11 @@
+@orchestrator
+docs/01.analysis/01.rfp/wms_prd-inventory-flow.md 기준으로 F5~F7(입고등록·재고·출고등록)을 현재 프로젝트에 추가해 줘.
+
+전제:
+- 입고·출고·대시보드는 이미 구현됨 → 회귀 없이 추가만
+- 재고 DDL은 database/schemas/06_inventory_ddl.sql 에 이미 있음
+  (twms_inventory, twms_inventory_hist — 01~05 적용 후 실행, 초기 재고 INSERT 없음)
+  → 로컬 DB에 적용 완료된 상태, db-architect 호출하지 않음
+- 기존 REQ/UI/Task/DDL(01~05) 수정 금지, 신규 문서만 추가
+
+E2E: 입고등록 → 입고확정 → 재고확인 → 출고등록 → 출고확정 → 재고감소
